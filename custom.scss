@@ -1,0 +1,101 @@
+/*-- scss:defaults --*/
+
+$primary: #637238 !default;
+$font-size-root: 18px !default;
+
+
+/*-- scss:rules --*/
+
+span.boxed {
+  border: 5px solid gray;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+span.invboxed {
+  border: 5px solid gray;
+  padding: 5px;
+  border-radius: 10px;
+  color: white;
+}
+
+span.bigger-boxed {
+  border: 5px solid gray;
+  border-radius: 10px;
+  padding: 5px;
+  font-size: 2em;
+  font-weight: bold;
+}
+span.bigger-invboxed {
+  border: 5px solid gray;
+  padding: 5px;
+  border-radius: 10px;
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+span.smaller-boxed {
+  border: 5px solid gray;
+  border-radius: 10px;
+  padding: 5px;
+  font-size: 0.5em;
+ }
+span.smaller-invboxed {
+  border: 5px solid gray;
+  padding: 5px;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.5em;
+ }
+
+
+table, td, th {
+  border: 0px;
+}
+
+.sidebar-title {
+  color: #637238;
+}
+
+
+.center {
+  display: block;
+  text-align: center;
+}
+
+.center .boxed {
+  display: inline-block;
+}
+
+div.sidebar-item-container .active {
+  font-weight: bold;
+}
+
+.sidebar nav[role=doc-toc] ul>li>a.active, .sidebar nav[role=doc-toc] ul>li>ul>li>a.active{
+  font-weight: bold;
+}
+
+img.quarto-cover-image {
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+.quarto-section-identifier {
+  color: #6C6C6C;
+  font-weight: normal;
+}
+
+/* Code ------------------------------------------------ */
+
+code {
+  color: #373a3c;
+}
+
+code a:any-link {
+  text-decoration: underline;
+  text-decoration-color: #ccc;
+}
+
+pre {
+  background-image: linear-gradient(160deg,#f8f8f8 0,#f1f1f1 100%);
+}

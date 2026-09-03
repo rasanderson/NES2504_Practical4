@@ -1,10 +1,24 @@
 ---
 title: 'Practical 4: Generalised Linear Models'
-author: "Roy Sanderson"
-output:
-  html_document:
+author: "Roy Sanderson, Will Reid"
+format:
+  html:
     df_print: paged
-  word_document: default
+    number-sections: true
+    toc: true
+    toc-depth: 1
+    embed-resources: true
+    html-math-method: mathml
+    css: custom.scss
+  docx:
+    toc: true
+    toc-depth: 1
+    number-sections: true
+    reference_docx: template.docx
+format-links: false
+editor_options:
+  markdown:
+    wrap: sentence
 ---
 # Introduction
 Generalised linear models (GLMs) are, as their name suggests, an extension of the standard linear model. They still work to the same framework of a response variable, and one or more explanatory variables. The difference is that they can be much more flexible in the type of response variable you are working with. In a conventional linear model it is assumed that your response variable can take any value, e.g. 4.65, 1.98, -4.32, 65.0, 9241.2 etc. These represent a "normal" distribution or bell-shaped curve; you will also see a normal distribution called a "Gaussian" distribution, after the German mathematician Carl Gauss who first described it. Of course in "real" biological data, some of these values would not make any sense. You might have:
