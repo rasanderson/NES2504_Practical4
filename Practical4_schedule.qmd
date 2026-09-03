@@ -405,7 +405,7 @@ This value is the expected probability of lichen being present with calcium at 2
 
 # Binomial GLMs where the sample size varies (In your own time)
 ## Sample sizes in binomial GLMs
-The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
+The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-binomial-distribution) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
 
 We can take this extra information into account when doing the analyses. The `beetle_dat` dataset you imported at the start shows the numbers of flour beetles that are killed with different does of the insecticide carbon disulphide (mg/l). View the data using the usual R commands to get an understanding of it. It is no surprise to see that the mortality rate increases with pesticide dose. The `Mortality_rate` has been calculated as `Number_killed` divided by `Number_tested`. See if you can create a plot similar to the following:
 
