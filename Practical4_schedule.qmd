@@ -72,7 +72,7 @@ beetle_dat <- read.csv("Data/beetle.csv")
 
 # 1. GLMs with counts data
 ## 1.1 Counts of numbers of aquatic invertebrate species
-Aquatic invertebrates provide very useful bioindicators of river systems. A pollution event might be short-lived, and pollutants in the water only detectable for a few days after a spillage. However the effects on the aquatic invertebrates can be detectable for days, weeks or months. They are used by the UK's Environment Agency, Defra, Scottish, Welsh and NI governments to assess aquatic pollution through a system known as RIVPACS [see their website here for more details](https://www.ceh.ac.uk/services/rivpacs-reference-database).
+Aquatic invertebrates provide very useful bioindicators of river systems. A pollution event might be short-lived, and pollutants in the water only detectable for a few days after a spillage. However the effects on the aquatic invertebrates can be detectable for days, weeks or months. They are used by the UK's Environment Agency, Defra, Scottish, Welsh and NI governments to assess aquatic pollution through a system known as RIVPACS [see their website here for more details (right-click and open in new tab)](https://www.fba.org.uk/other-scientific-collaborations/rivpacs-and-rict).
 
 ## 1.2 Summary Statistics and visualisation of aquatic invertebrate data
 It is always good to start by observing the data and running some summary statistics. The data are are two columns of data, recording both the numbers of aquatic invertebrate species, and the water pollution levels, at 30 rivers.
@@ -116,7 +116,7 @@ gf_point(species~pollution, data = sppcount_dat) %>%
 
 ```
 
-The plot above shows a clear link between the total number of aquatic invertebrate species and the amount of pollution present in the water. Visualisation is insufficient to test our (null) hypothesis that there about relationships between pollution and number of species. We need a formal statistical model. We will begin by doing it the "wrong" way with a linear model, and diagnose what is incorrect. **Note**: Look carrefully at the graph you have just created, and you might already be able to detect a potential problem. What is it? **Hint**: what do you think the blue straight line of invertebrate species will be at high levels of pollution such as 12 or 15 mg/l?
+The plot above shows a clear link between the total number of aquatic invertebrate species and the amount of pollution present in the water. Visualisation is insufficient to test our (null) hypothesis that there about relationships between pollution and number of species. We need a formal statistical model. We will begin by doing it the "wrong" way with a linear model, and diagnose what is incorrect. **Note**: Look carefully at the graph you have just created, and you might already be able to detect a potential problem. What is it? **Hint**: what do you think the blue straight line of invertebrate species will be at high levels of pollution above 6 mg/l?
 
 ## 1.3 Incorrect analysis via linear model
 For the linear model we simply set our count of the number of species as the response, and pollution level as the explanatory in the usual way. Go ahead and store the results of your `lm()` call in an R object called `sppcount_lm`, and produce a summary of the results. Check that you get the following:
@@ -131,10 +131,10 @@ summary(sppcount_lm)
 
 ```
 
-As you would expect, the model is highly significant, with a negative (significant) gradient for slope of -2.57, in other words for every 1 mg/l increase in pollution there is a decline in the number of species by about 2.57. When there is no pollution the number of species is about 29, which matches the graph you have just plotted above, when the horizontal axis of pollution is at zero.  There are two major problems however, the second of which you may already have spotted:
+As you would expect, the model is highly significant, with a negative (significant) gradient for slope of `r round(summary(sppcount_lm)$coef["pollution","Estimate"],2)`, in other words for every 1 mg/l increase in pollution there is a decline in the number of species by about `r abs(round(summary(sppcount_lm)$coef["pollution","Estimate"],2))`. When there is no pollution the linear model estimates the number of species to be about about `r round(summary(sppcount_lm)$coef["(Intercept)","Estimate"],2)`, which looks a big underestimate compared to your graph, when the horizontal axis of pollution is at zero.  So you have identified at least two problems with the linear models, at low and high pollution levels.
 
 ### 1.3.1 Have model assumptions been broken?
-You will recall that linear models assume your data (or more precisely, the noise or errors around your fitted line) come from a normal or Gaussian distribution. The easiest way to check this is via a QQ plot. Remember to click in the Console window (bottom left) and hit the big 'Enter' key :
+You will recall that linear models assume your data (or more precisely, the noise or errors around your fitted line) come from a normal or Gaussian distribution. The easiest way to check this is via residual and QQ plots. Remember to click in the Console window (bottom left) and hit the big 'Enter' key :
 
 ```{r}
 # Check that assumptions of model are correct - no they are not!
@@ -142,19 +142,18 @@ You will recall that linear models assume your data (or more precisely, the nois
 plot(sppcount_lm, which = 1:2)
 ```
 
-The plot of residuals vs fitted looks reasonable, although the scatter of points is
-smaller at low fitted values than desirable. The main problem is that there is a strong S-bend in the QQ plot, hinting that there might be problems with the model and its assumptions are not satisfied.
+You can immediately see problems in both plots. The residuals vs fitted plots shows a U-shaped line, whereas ideally it should be roughly horizontal, whilst the QQ has much high observed (standardized) residuals at high values of the predicted, whereas ideally all the points should be roughly on the dotted diagonal. Both graphs suggest problems with the simple model and its assumptions are not satisfied.
 
 ### 1.3.1 What are the predicted numbers of species in heavily polluted rivers?
-Hopefully you have already detected that this is a fundamental problem, simply by looking at your original graph of the data, with the straight line of the number of species added. What, for example, is the predicted number of species when water pollution is at 12 mg/l ?  Let's work it out:
+Hopefully you have already detected that this is a fundamental problem, simply by looking at your original graph of the data, with the straight line of the number of species added. What, for example, is the predicted number of species when water pollution is at 7 mg/l ?  You don't actually have any observations at 7 mg/l but let's see what your model predicts:
 
 
 ```{r}
 # Create a predictor function
 lm_species_predictor <- makeFun(sppcount_lm)
 
-# Obtain predicted value at 12 mg/l
-lm_species_predictor(12)
+# Obtain predicted value at 7 mg/l
+lm_species_predictor(7)
 
 ```
 
