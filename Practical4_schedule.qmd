@@ -70,11 +70,11 @@ beetle_dat <- read.csv("Data/beetle.csv")
 ```
 
 
-# 1. GLMs with counts data
-## 1.1 Counts of numbers of aquatic invertebrate species
+# GLMs with counts data
+## Counts of numbers of aquatic invertebrate species
 Aquatic invertebrates provide very useful bioindicators of river systems. A pollution event might be short-lived, and pollutants in the water only detectable for a few days after a spillage. However the effects on the aquatic invertebrates can be detectable for days, weeks or months. They are used by the UK's Environment Agency, Defra, Scottish, Welsh and NI governments to assess aquatic pollution through a system known as RIVPACS [see their website here for more details (right-click and open in new tab)](https://www.fba.org.uk/other-scientific-collaborations/rivpacs-and-rict).
 
-## 1.2 Summary Statistics and visualisation of aquatic invertebrate data
+## Summary Statistics and visualisation of aquatic invertebrate data
 It is always good to start by observing the data and running some summary statistics. The data are are two columns of data, recording both the numbers of aquatic invertebrate species, and the water pollution levels, at 30 rivers.
 
 ```{r echo=TRUE, include=TRUE}
@@ -118,7 +118,7 @@ gf_point(species~pollution, data = sppcount_dat) %>%
 
 The plot above shows a clear link between the total number of aquatic invertebrate species and the amount of pollution present in the water. Visualisation is insufficient to test our (null) hypothesis that there about relationships between pollution and number of species. We need a formal statistical model. We will begin by doing it the "wrong" way with a linear model, and diagnose what is incorrect. **Note**: Look carefully at the graph you have just created, and you might already be able to detect a potential problem. What is it? **Hint**: what do you think the blue straight line of invertebrate species will be at high levels of pollution above 6 mg/l?
 
-## 1.3 Incorrect analysis via linear model
+## Incorrect analysis via linear model
 For the linear model we simply set our count of the number of species as the response, and pollution level as the explanatory in the usual way. Go ahead and store the results of your `lm()` call in an R object called `sppcount_lm`, and produce a summary of the results. Check that you get the following:
 
 
@@ -133,7 +133,7 @@ summary(sppcount_lm)
 
 As you would expect, the model is highly significant, with a negative (significant) gradient for slope of `r round(summary(sppcount_lm)$coef["pollution","Estimate"],2)`, in other words for every 1 mg/l increase in pollution there is a decline in the number of species by about `r abs(round(summary(sppcount_lm)$coef["pollution","Estimate"],2))`. When there is no pollution the linear model estimates the number of species to be about about `r round(summary(sppcount_lm)$coef["(Intercept)","Estimate"],2)`, which looks a big underestimate compared to your graph, when the horizontal axis of pollution is at zero.  So you have identified at least two problems with the linear models, at low and high pollution levels.
 
-### 1.3.1 Have model assumptions been broken?
+### Have model assumptions been broken?
 You will recall that linear models assume your data (or more precisely, the noise or errors around your fitted line) come from a normal or Gaussian distribution. The easiest way to check this is via residual and QQ plots. Remember to click in the Console window (bottom left) and hit the big 'Enter' key :
 
 ```{r}
@@ -144,7 +144,7 @@ plot(sppcount_lm, which = 1:2)
 
 You can immediately see problems in both plots. The residuals vs fitted plots shows a U-shaped line, whereas ideally it should be roughly horizontal, whilst the QQ has much high observed (standardized) residuals at high values of the predicted, whereas ideally all the points should be roughly on the dotted diagonal. Both graphs suggest problems with the simple model and its assumptions are not satisfied.
 
-### 1.3.1 What are the predicted numbers of species in heavily polluted rivers?
+### What are the predicted numbers of species in heavily polluted rivers?
 Hopefully you have already detected that this is a fundamental problem, simply by looking at your original graph of the data, with the straight line of the number of species added. What, for example, is the predicted number of species when water pollution is at 7 mg/l ?  You don't actually have any observations at 7 mg/l but let's see what your model predicts:
 
 
@@ -159,8 +159,8 @@ lm_species_predictor(7)
 
 Uh oh! We seem to be predicting a **negative** number of species, but we know that this is biological nonsense. The minimum value we should get is zero.
 
-## 1.4 GLM and Simeon Poisson to the rescue...
-GLMs are much more flexible, and we can use them to produce a much better and biologically meaningful model. Simeon Poisson was an early 19th Century French mathematician devised a distribution that handled count rather than continuous data. See [This interactive website](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-distribution) to view the Poisson distribution. When the website loads, the distribution initially looks like a normal distribution, but with whole numbers. It has one parameter $\lambda$ (Greek letter lambda). Move the slider. You will notice that the distribution never contains values less than zero.
+## GLM and Simeon Poisson to the rescue...
+GLMs are much more flexible, and we can use them to produce a much better and biologically meaningful model. Simeon Poisson was an early 19th Century French mathematician devised a distribution that handled count rather than continuous data. See [This interactive website (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-distribution) to view the Poisson distribution. When the website loads, the distribution initially looks like a normal distribution, but with whole numbers. It has one parameter $\lambda$ (Greek letter lambda). Move the slider. You will notice that the distribution never contains values less than zero.
 
 Let's now change from a linear model to a generalised linear model. If we simply replace `lm()` with `glm()` we will actually get the same results as before, because it defaults to using a normal distribution. However, if we use the `family` option we can specify that we want a Poisson distribution. Try the following and check your results match:
 
@@ -177,11 +177,11 @@ So now what does this all mean.
 
 * **deviance** is the term used for variation in your data points
 * The **deviance residuals** line gives a summary of the min, max, mean of all this variation after the model has been fitted, in other words a summary of the noise for all 30 rivers.
-* The **coefficients** are your **explanatory** variables (i.e. pollution). You may notice that there are two coefficients when our model only specified one.
+* The **coefficients** are your **explanatory** variables (i.e. pollution). You may notice that there are two coefficients when our model only specified one: `(Intercept)` and `pollution`.
 
- - `(Intercept)` As usual, this is the predicted number of species when your explanatory variable (pollution) is zero. Here the estimated value for this is 3.43, which seems very low, but keep reading.
- - `pollution` this is the change in your number of species with increasing pollution, which is negative, reflecting a decline in biodiversity with pollution. However, the value of -0.139 probably seems a bit odd
-- instead of t-statistics, maximum likelihood methods such as GLM produce z-statistics, which can be interpreted in a similar way to produce p-values. Both p-values are extremely low. Remember that `7.79-e13` is shorthand for `0.000000000000779` which you would write as `p<0.001` in a report.
+ - `(Intercept)` As usual, this is the predicted number of species when your explanatory variable (pollution) is zero. Here the estimated value for this is `r round(summary(sppcount_glm)$coefficients["(Intercept)", "Estimate"],3)`, which seems very low, but keep reading.
+ - `pollution` this is the change in your number of species with increasing pollution, which is negative, reflecting a decline in biodiversity with pollution. However, the value of `r round(summary(sppcount_glm)$coefficients["pollution", "Estimate"], 3)` seems too low. Again, keep reading.
+- instead of t-statistics, maximum likelihood methods such as GLM produce z-statistics, which can be interpreted in a similar way to produce p-values. Both p-values are extremely low. Remember that a value such as `7.79-e13` is shorthand for `0.000000000000779` (13 zeroes) whilst `<2e-16` indicates less than `0.0000000000000002` (16 zeroes). You write such values `p<0.001` in a report.
 
 * The **residual deviance** is a measure of how good your model is. If your residual deviance value is close to zero, then the model is  very good. 
 * The **AIC** value is used when comparing two similar models, the lower the AIC, the better the model.
@@ -190,18 +190,19 @@ So now what does this all mean.
 There is a lot of information in the output and it is easy to get overwhelmed. The main things to note are the `Estimate` values, and when you report them in a table you would typically quote their associated z and p statistics, along with the overall AIC. Another useful thing is to assess the percentage variation explained by your model:
 
 $$ \text{%  explained by model} = \frac{\text{Null deviance} - \text{Residual deviance}}{\text{Null deviance}}*100$$
+
 Now you can calculate the percentage variation explained by your model above, based on the output of your summary table. Remember to use brackets around the subtraction term.
 
-#### What about the strange Estimates from the GLM?
-As we noted above, the values of 3.43 and -0.139 do not quite match what was expected. Indeed, looking at your original graph, an estimated number of species of only 3.43 when the water is unpolluted (x-axis at zero) does not match your graph where it looks to be around 29 or 30 species! This is because GLMs use what is known as a "link function" in their calculations; if you are interested see the [How to generalise page from the interactive website](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-how-to-generalise). Poisson GLMs use natural logarithms as their link function, so we would need to take the antilogarithm to get back to the original units. As these are natural logarithms, (i.e. $log_e$ rather than $log_{10}$) we need to take the exponential to convert to the original units, available through the `exp()` function. Let's check with the expected number of species when pollution is zero, i.e. the intercept:
+## What about the strange Estimates from the GLM?
+As we noted above, the values of `r round(summary(sppcount_glm)$coefficients["(Intercept)", "Estimate"],2)` and `r round(summary(sppcount_glm)$coefficients["pollution", "Estimate"], 3)` do not quite match what was expected. Indeed, looking at your original graph, an estimated number of species of only `r round(summary(sppcount_glm)$coefficients["(Intercept)", "Estimate"],2)` when the water is unpolluted (x-axis at zero) does not match your graph where it looks to be around 29 or 30 species! This is because GLMs use what is known as a "link function" in their calculations; if you are interested see the [How to generalise page from the interactive website (right-click open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-how-to-generalise). Poisson GLMs use natural logarithms as their link function, so we would need to take the antilogarithm to get back to the original units. As these are natural logarithms, (i.e. $log_e$ rather than $log_{10}$) we need to take the exponential to convert to the original units, available through the `exp()` function. Let's check with the expected number of species when pollution is zero, i.e. the intercept:
 
 ```{r}
-exp(3.43)
+exp(3.154)
 ```
 
-That looks more sensible based on our original scatterplot of the data. To finish off, we will check the model assumptions, predict the number of species when pollution is 12 mg/l and replot our original graph, but with a GLM rather than linear model.
+That looks more sensible based on our original scatterplot of the data. To finish off, we will check the model assumptions, predict the number of species when pollution is 7 mg/l and replot our original graph, but with a GLM rather than linear model.
 
-### 1.4.1 Check Poisson GLM model assumptions
+## Check Poisson GLM model assumptions
 As before, create a QQ plot of the residuals. Use the `plot()` function and specify `which = 1:2` as parameters, as earlier. Remember to click in the Console window (bottom left) and hit enter to see each plot. You should end up with graphs similar to these:
 
 ```{r, echo=FALSE}
@@ -209,26 +210,27 @@ As before, create a QQ plot of the residuals. Use the `plot()` function and spec
 plot(sppcount_glm, which = 1:2)
 ```
 
-Although the QQ plot still shows a slight S-bend in the scatter of points, it is nothing like as severe a problem as we had with the linear model of the same data, so we can be much more confident about the model.
+This is much better. The red line in the residuals v fitted plot is roughly horizontal, and in the QQ plot most points are roughly on the diagonal. This indicates that the Poisson GLM is a much more appropriate model for these data than the linear model.
 
-### 1.4.2 What is the predicted number of species in heavily polluted streams with the GLM?
-With the linear model we had the problem that our model could predict negative numbers of species in polluted water. What do we get with the GLM? Modify your `makeFun()` call to create a new `glm_species_predictor()` function, and see if you get this value for 12 mg/l pollution?
+## What is the predicted number of species in heavily polluted streams with the GLM?
+With the linear model we had the problem that our model could predict negative numbers of species in polluted water. What do we get with the GLM? Modify your `makeFun()` call to create a new `glm_species_predictor()` function, and see if you get this value for 7 mg/l pollution?
 
 ```{r, echo=FALSE}
-# Create a predictor function
+# Create a predictor function for GLM Poisson model
 glm_species_predictor <- makeFun(sppcount_glm)
 
-# Obtain predicted value at 12 mg/l
-glm_species_predictor(12)
+# Obtain predicted value at 7 mg/l
+glm_species_predictor(7)
 
 ```
 
-The biodiversity is obviously very low, but it is still positive, which makes more sense than the negative number of species estimated by the incorrect linear model for 12 mg/l pollution we used in Section 1.3.
+The biodiversity is obviously very low, close to zero, but it is still positive, which makes more sense than the negative number of species estimated by the incorrect linear model for 7 mg/l pollution we used in Section 1.3. It also looks right based on your original scatterplot.
 
-### 1.4.3 Modify scatterplot of original data to show Poisson GLM
+## Modify scatterplot of original data to show Poisson GLM
 Our original scatter plot had a straight line from the `gf_lm()` function. Instead, we will add a curve from our GLM model, using `gf_smooth()`. This function has several methods for creating curves, and we specify that we used a GLM, with Poisson errors, and gives a smooth curve. **Build the following graph up slowly**, one line at a time, re-creating it each time, so you understand what each command does:
 
 ```{r}
+# Scatterplot (point plot) of count of species with GLM poisson curve
 gf_point(species ~ pollution, data=sppcount_dat) %>% 
   gf_labs(x = "Aquatic pollution level (mg/l)", y="Number of invertebrate species") %>% 
   gf_smooth(method="glm", method.args = list(family=poisson(link = "log")), se=TRUE) %>% 
@@ -237,17 +239,17 @@ gf_point(species ~ pollution, data=sppcount_dat) %>%
 
 
 
-## 2. GLMs with Binary Data
+# GLMs with Binary Data
 Your experiment may produce categorical response data, e.g. male or female, wilted or turgid, infected or uninfected, dead or alive. Note that a response such as simply 'dead' or 'alive' differs from a response where you have counts of the numbers of dead or alive out of your original sample. So binary data can have two slightly different forms:
 
 * Simple presence / absence; dead / alive; 0 / 1 data (binary response)
 * Information about sample size. e.g. number of eggs that hatch, out of egg clutches that vary slightly in their size between nests.
 
-The latter has more information (and is proportion data) so can be analysed slightly differently, but both use the **binomial distribution**, see [this page of the Interactive website](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions). In the simple binary response the sample size, shown as "Size of each trial" on the interactive graph on the website, is 1. In the second type of scenario, the sample size would vary depending on for example the size of each egg clutch in different nests.
+The latter has more information (and is proportion data) so can be analysed slightly differently, but both use the **binomial distribution**, see [this page of the Interactive website ](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions). In the simple binary response the sample size, shown as "Size of each trial" on the interactive graph on the website, is 1. In the second type of scenario, the sample size would vary depending on for example the size of each egg clutch in different nests.
 
 In this practical we will focus on the simpler type of data, where you just have a binary response. We will use the data `lichen_dat` that you read into R at the start of this practical. In this example, you are testing the effect of atmospheric pollution on the presence or absence of lichen on trees. Lichens have been found to be very sensitive biological indicators of atmospheric pollution. As lichen presence can be affected by the tree bark, particularly calcium content, this was also measured. Your response is a 1 or 0, where 1 indicates lichen are present and 0 lichen absent. 
 
-## 2.1 Summary statistics and visualisation of lichen data
+## Summary statistics and visualisation of lichen data
 
 Start with some visualisation and summary statistics. What do the plots bellow tell you about lichen ecology? Can you form some initial assumptions based on what they show?  
 
@@ -294,8 +296,8 @@ gf_boxplot(lichen_fct ~ airpoll, data = lichen_dat) %>%
 
 Displaying your data this way gives you a much better insight into the relationships between the response variable of lichen, and explanatory of air pollution or calcium, whilst still adhering to the convention of placing your **response on the vertical** axis, and the **explanatory on the horizontal** axis.
 
-## 2.2 GLMs with binary response variable
-### 2.2.1 Interaction terms in linear models and generalised linear models
+## GLMs with binary response variable
+### Interaction terms in linear models and generalised linear models
 Here we have two explanatory variables, calcium and air pollution. We cannot assume that they are independent in their effects, and they may **interact** in some way in terms of their impact on the presence or absence of lichens. You have already covered interaction terms in Practical 3, and remind yourself of how they work at [interactive website explaining interaction terms](https://naturalandenvironmentalscience.shinyapps.io/multiple_explan/#section-interactions-between-explanatory-variables)
 
 When a GLM contains a `:` in the explanatory variables, such as
@@ -326,7 +328,7 @@ The output is very similar to the previous GLM, but here we have four parameters
 * Think back to your violinplots (or boxplots) of the lichens and these environmental variables. These seem to suggest some sort of relationship.
 * Always look at the interaction term first. If it is non-significant, refit the model without the interaction term.
 
-### 2.2.2 Two ways to update your (linear or) generalised linear model
+### Two ways to update your (linear or) generalised linear model
 When you have the results of a model with one or more interaction terms, the best strategy is to:
 
 * refit the model without the most complicated non-significant interaction term (here simply the `airpoll:calcium` term)
@@ -374,7 +376,7 @@ Notice now that the main effects for air pollution and calcium are both signific
 
 The better of the two models is the second, simpler one, without the interaction term. A good general rule is 'KISS' (Keep it Simple Stupid) as it is easy to create too complex a model to isn't biologically meaningful. Finally, look at the outputs of `summary(lichen_glm2)` : what is the percentage variation explained by this model?
 
-### 2.2.3 Checking binomial model assumptions and making predictions
+### Checking binomial model assumptions and making predictions
 It is actually quite difficult to interpret the residuals from a binomial model, because the response variable is binary. Therefore, whilst you can create a QQ plot, do not be surprised if the plot shows quite a big curve in it. Some people recommend the `binnedplot()` function from the `arm` R package, which we have not used in this course. If you wish, feel free to investigate it, but it is entirely optional.
 
 You can of course make a prediction from your model. First, let us produce a plot of the predicted probability of lichen at different calcium levels. To avoid the problem of all the points for presence or absence of lichen overlapping each other, we will use `gf_jitter()` instead of `gf_point()`. The `height` option controls how much "jitter" there is around the points. The `gf_smooth()` function is again used to add the fitted line, but now we have to specify that the `binomial` error family is used. As usual, build up the plot one line at a time, to see what happens, adding a `%>%` symbol at the end of the preceding line when you want to add a new one:
@@ -394,8 +396,8 @@ round(lichen_glm_predict(calcium=2, airpoll=5), 4)
 ```
 
 
-# 3. Binomial GLMs where the sample size varies (Optional: in your own time)
-## 3.1 Sample sizes in binomial GLMs
+# Binomial GLMs where the sample size varies (Optional: in your own time)
+## Sample sizes in binomial GLMs
 The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
 
 We can take this extra information into account when doing the analyses. The `beetle_dat` dataset you imported at the start shows the numbers of flour beetles that are killed with different does of the insecticide carbon disulphide (mg/l). View the data using the usual R commands to get an understanding of it. It is no surpise to see that the mortality rate increases with pesticide dose. The `Mortality_rate` has been calculated as `Number_killed` divided by `Number_tested`. See if you can create a plot similar to the following:
@@ -408,7 +410,7 @@ gf_point(Mortality_rate ~ Dose, data = beetle_dat) %>%
 
 Whilst it might be tempting to try and fit a curve immediately to these mortality rates, you actually have more information at your disposal: the sample size (`Number_tested`). If the sample size is big then any estimated mortality derived from it is likely to be more reliable, compared to a smaller sample size. You can see from the raw table of data in `beetle_dat` that your smallest sample size (49) received the lowest dose of insecticide, whilst the largest (63) received an intermediate dose. You can take this information into account to improve your GLM.
 
-## 3.2 How to include sample size in your GLM
+## How to include sample size in your GLM
 R expects to receive **two** columns in your response variable, one the number of beetles that died, the other the number that survived. We don't actually have that second column, but we can easily calculate it and include it in your `beetle_dat` table. Remember that the `$` is used to allow you to reference individual columns of the table of data:
 
 ```{r}
@@ -433,7 +435,7 @@ beetle_glm_predict(0)
 
 Remember that when you see 4.664753e-07 it is 0.0000004664753, so the mortality rate at zero pesticide is, as expected, negligible.
 
-## 3.3 Plotting GLM results when sample size varies
+## Plotting GLM results when sample size varies
 The default `gf_smooth()` assumes the sample size is the same for every point. So the best approach is to predict your mortality rate using the `beetle_glm_predict()` function for the `Dose` in your dataset, and then base your smoothed curve on that. You have to specify in your `gf_smooth()` function that you are using these predicted values. You may get a warning about non-integer values, but ignore this.
 
 ```{r, warning=FALSE}
