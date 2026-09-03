@@ -245,7 +245,7 @@ Your experiment may produce categorical response data, e.g. male or female, wilt
 * Simple presence / absence; dead / alive; 0 / 1 data (binary response)
 * Information about sample size. e.g. number of eggs that hatch, out of egg clutches that vary slightly in their size between nests.
 
-The latter has more information (and is proportion data) so can be analysed slightly differently, but both use the **binomial distribution**, see [this page of the Interactive website ](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions). In the simple binary response the sample size, shown as "Size of each trial" on the interactive graph on the website, is 1. In the second type of scenario, the sample size would vary depending on for example the size of each egg clutch in different nests.
+The latter has more information (and is proportion data) so can be analysed slightly differently, but both use the **binomial distribution**, see [this page of the Interactive website (right-click and open in new tab) ](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions). In the simple binary response the sample size, shown as "Size of each trial" on the interactive graph on the website, is 1. In the second type of scenario, the sample size would vary depending on for example the size of each egg clutch in different nests.
 
 In this practical we will focus on the simpler type of data, where you just have a binary response. We will use the data `lichen_dat` that you read into R at the start of this practical. In this example, you are testing the effect of atmospheric pollution on the presence or absence of lichen on trees. Lichens have been found to be very sensitive biological indicators of atmospheric pollution. As lichen presence can be affected by the tree bark, particularly calcium content, this was also measured. Your response is a 1 or 0, where 1 indicates lichen are present and 0 lichen absent. 
 
@@ -262,6 +262,7 @@ str(lichen_dat)
 Before we continue, notice that calcium and air pollution are continuous variables, indicated by `num` in the structure of the data. However `lichen` is showing as a `int` or whole-number integer, and the summary is giving a mean value of 0.58 for the lichens. This is a little misleading, as really the lichens are a categorical binary response. We can force R to recognise this by using the `as.factor()` function. Remember we use the `$` symbol to allow us to refer to a single column:
 
 ```{r}
+# Force R to recognise that lichen 0/1 is presence/absence not continuous
 lichen_dat$lichen_fct <- as.factor(lichen_dat$lichen)
 summary(lichen_dat)
 str(lichen_dat)
@@ -282,12 +283,14 @@ We can get round this problem by flipping our boxplots or violin plots through 9
 Let's create a simple boxplot first to show the idea. We use the `lichen_fct` as the response, rather than `lichen` as we want a categorical variable (lichen presence or absence) in a boxplot. In previous boxplots your response has been continuous, and your explanatory categorical. However, here we put it the other way round, to reflect the biology:
 
 ```{r}
+# Boxplot to show impact of calcium on lichen presence/absence
 gf_boxplot(lichen_fct ~ calcium, data=lichen_dat) 
 ```
 
 Now create a similar boxplot, but showing the differences in lichen response to air pollution. You may wish to smarten up your plot to improve the axis titles etc. The `gf_jitter` function allows you to see the original data points:
 
 ```{r}
+# Boxplot to show impact of calcium on lichen presence/absence
 gf_boxplot(lichen_fct ~ airpoll, data = lichen_dat) %>% 
   gf_jitter() %>% 
   gf_labs(x = "Air pollution", y = "Lichen incidence") %>% 
@@ -298,7 +301,7 @@ Displaying your data this way gives you a much better insight into the relations
 
 ## GLMs with binary response variable
 ### Interaction terms in linear models and generalised linear models
-Here we have two explanatory variables, calcium and air pollution. We cannot assume that they are independent in their effects, and they may **interact** in some way in terms of their impact on the presence or absence of lichens. You have already covered interaction terms in Practical 3, and remind yourself of how they work at [interactive website explaining interaction terms](https://naturalandenvironmentalscience.shinyapps.io/multiple_explan/#section-interactions-between-explanatory-variables)
+Here we have two explanatory variables, calcium and air pollution. We cannot assume that they are independent in their effects, and they may **interact** in some way in terms of their impact on the presence or absence of lichens. You have already covered interaction terms in Practical 3, and remind yourself of how they work at [interactive website explaining interaction terms (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/multiple_explan/#section-interactions-between-explanatory-variables)
 
 When a GLM contains a `:` in the explanatory variables, such as
 
@@ -314,10 +317,10 @@ and
 
 are identical. The latter type of structure to call either linear or generalised linear models with interactions can save you having to type all the main effects separately, and is especially useful with e.g. 3 (or more) explanatory variables.
 
-We will begin by running a full model including the interaction terms; however, these can be removed later if not necessary. Notice that the family for this model has been changed as we now have a binary response variable. The appropriate family to describe the error distribution when you have presence/absence data is the **binomial** distribution. Go to [interactive website](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) to remind yourself of a binomial distribution. Your sample size here is 1 as there is only a single observation at each site as to whether lichen is present or absent.
+We will begin by running a full model including the interaction terms; however, these can be removed later if not necessary. Notice that the family for this model has been changed as we now have a binary response variable. The appropriate family to describe the error distribution when you have presence/absence data is the **binomial** distribution. Go to [interactive website (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) to remind yourself of a binomial distribution. Your sample size here is 1 as there is only a single observation at each site as to whether lichen is present or absent.
 
 ```{r echo=TRUE, include=TRUE}
-
+# Generalised linear model with binomial errors for lichen presence/absence
 lichen_glm1 <- glm(lichen ~ airpoll + calcium + airpoll:calcium, data = lichen_dat, family = binomial(link = "logit"))
 summary(lichen_glm1)
 
@@ -331,7 +334,7 @@ The output is very similar to the previous GLM, but here we have four parameters
 ### Two ways to update your (linear or) generalised linear model
 When you have the results of a model with one or more interaction terms, the best strategy is to:
 
-* refit the model without the most complicated non-significant interaction term (here simply the `airpoll:calcium` term)
+* refit the model without the most complicated non-significant interaction term (here simply the `airpoll:calcium` interaction term)
 * look at the `summary()` of the model
 * see if the simpler model is as good as the more complex one (models can be formally compared if needed)
 * repeat if required
@@ -339,6 +342,7 @@ When you have the results of a model with one or more interaction terms, the bes
 There are actually two ways available to refit your model without the interaction term, and you can use both approaches for models fit with either `lm()` or `glm()`. The first is fairly obvious:
 
 ```{r, eval=FALSE}
+# Revised simpler model written with just main effects
 lichen_glm2 <- glm(lichen ~ airpoll + calcium, data = lichen_dat, family = binomial)
 summary(lichen_glm2)
 ```
@@ -357,6 +361,7 @@ The second "shorthand" method is useful if you start off with lots of interactio
 The situation gets worse the more explanatory variables you have. So if you need to simplify your model, having to explicitly retype all the possible terms to keep can easily result in typing errors. Here it is not a major problem, as you only have one interaction term to worry about. The trick is to `update()` your original model, and remove the non-significant interaction term:
 
 ```{r}
+# Revised simpler model by updating lichen_glm1 and deleting interaction
 lichen_glm2 <- update(lichen_glm1, . ~ . -airpoll:calcium)
 ```
 
@@ -382,11 +387,12 @@ It is actually quite difficult to interpret the residuals from a binomial model,
 You can of course make a prediction from your model. First, let us produce a plot of the predicted probability of lichen at different calcium levels. To avoid the problem of all the points for presence or absence of lichen overlapping each other, we will use `gf_jitter()` instead of `gf_point()`. The `height` option controls how much "jitter" there is around the points. The `gf_smooth()` function is again used to add the fitted line, but now we have to specify that the `binomial` error family is used. As usual, build up the plot one line at a time, to see what happens, adding a `%>%` symbol at the end of the preceding line when you want to add a new one:
 
 ```{r}
+# Jittered scatterplot of lichen presence/absence plus GLM curve
 gf_jitter(lichen ~ calcium, data=lichen_dat, height=0.05) %>% 
   gf_smooth(method="glm", method.args = list(family=binomial(link = "logit")), se=TRUE)
 ```
 
-Add additional R lines to change the overall plotting theme, modify the axis labels, and repeat for air pollution.
+Add 2 additional R lines to the code to modify the axis labels (`gf_labs`) and overall plotting theme (`gf_theme`). Then add code (copy and paste and edit previous set) to create a second plot of calcium vs air pollution.
 
 Now use the `makeFun()` approach with `lichen_glm2` to predict the probability of lichens being present at a calcium level of 2, and air pollution of 5. **Remember** as you have two variables in your model, you will need to enter both variables into your `lichen_glm_predict()` command. You should obtain the following value. I have used the `round()` function to round to 4 decimal places:
 
@@ -395,14 +401,16 @@ lichen_glm_predict <- makeFun(lichen_glm2)
 round(lichen_glm_predict(calcium=2, airpoll=5), 4)
 ```
 
+This value is the expected probability of lichen being present with calcium at 2, air pollution at 5.
 
-# Binomial GLMs where the sample size varies (Optional: in your own time)
+# Binomial GLMs where the sample size varies (In your own time)
 ## Sample sizes in binomial GLMs
-The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
+The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-poisson-and-binomial-distributions) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
 
-We can take this extra information into account when doing the analyses. The `beetle_dat` dataset you imported at the start shows the numbers of flour beetles that are killed with different does of the insecticide carbon disulphide (mg/l). View the data using the usual R commands to get an understanding of it. It is no surpise to see that the mortality rate increases with pesticide dose. The `Mortality_rate` has been calculated as `Number_killed` divided by `Number_tested`. See if you can create a plot similar to the following:
+We can take this extra information into account when doing the analyses. The `beetle_dat` dataset you imported at the start shows the numbers of flour beetles that are killed with different does of the insecticide carbon disulphide (mg/l). View the data using the usual R commands to get an understanding of it. It is no surprise to see that the mortality rate increases with pesticide dose. The `Mortality_rate` has been calculated as `Number_killed` divided by `Number_tested`. See if you can create a plot similar to the following:
 
 ```{r}
+# Flour beetles and mortality with insecticide
 gf_point(Mortality_rate ~ Dose, data = beetle_dat) %>% 
   gf_labs(x="Carbon disulphide concentration (mg/l)", y="Mortality rate") %>% 
   gf_refine(theme_classic())
@@ -414,6 +422,7 @@ Whilst it might be tempting to try and fit a curve immediately to these mortalit
 R expects to receive **two** columns in your response variable, one the number of beetles that died, the other the number that survived. We don't actually have that second column, but we can easily calculate it and include it in your `beetle_dat` table. Remember that the `$` is used to allow you to reference individual columns of the table of data:
 
 ```{r}
+# Calculate numbers of surviving beetles
 beetle_dat$Number_alive <- beetle_dat$Number_tested - beetle_dat$Number_killed
 beetle_dat
 ```
@@ -421,14 +430,16 @@ beetle_dat
 You can now bind the two columns of `Number_killed` and `Number_alive` together using the `cbind()` function, and present this as your response variable to the `glm()` function:
 
 ```{r}
+# GLM that accounts for different sample sizes in each row
 beetle_glm <- glm(cbind(Number_killed, Number_alive) ~ Dose, family=binomial(link = "logit"), data=beetle_dat)
 summary(beetle_glm)
 
 ```
 
-The output shows, as expected, a highly significant effect of the pesticide on the survivorship of the beetles. Again, you might be puzzled by the `-14.578` value for the Intercept, which is the mortality at zero dose of insecticide. This is because binomial GLMs use the "logit" link function which are natural logarithms of the odds of success to failure. This can be calculated manually (which is a bit tricky) so it is much easier to use the `makeFun()` approach:
+The output shows, as expected, a highly significant effect of the pesticide on the survivorship of the beetles. Again, you might be puzzled by the `r round(summary(beetle_glm)$coefficients["(Intercept)" , "Estimate"], 3)` value for the Intercept, which is the mortality at zero dose of insecticide. This is because binomial GLMs use the "logit" link function which are natural logarithms of the odds of success to failure. This can be calculated manually (which is a bit tricky) so it is much easier to use the `makeFun()` approach:
 
 ```{r}
+# Create function to predict numbers of beetles and predict for 0 pesticide dose
 beetle_glm_predict <- makeFun(beetle_glm)
 beetle_glm_predict(0)
 ```
