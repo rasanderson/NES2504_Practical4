@@ -24,8 +24,8 @@ editor_options:
 Generalised linear models (GLMs) are, as their name suggests, an extension of the standard linear model. They still work to the same framework of a response variable, and one or more explanatory variables. The difference is that they can be much more flexible in the type of response variable you are working with. In a conventional linear model it is assumed that your response variable can take any value, e.g. 4.65, 1.98, -4.32, 65.0, 9241.2 etc. These represent a "normal" distribution or bell-shaped curve; you will also see a normal distribution called a "Gaussian" distribution, after the German mathematician Carl Gauss who first described it. Of course in "real" biological data, some of these values would not make any sense. You might have:
 
 * **Binary data** Presence / Absence, Dead / Alive, Diseased / Healthy, Mutant / Wild Type etc.
-* **Count data** Number of birds in different gardens, counts of pollinators visiting flowers, number of muscle reflexes in response to electical stimuli etc.
-* **Positive numbers only** Heights of oak trees, weights of brown rats, yield of crops etc. These numbers might have decimal places, but they cannot be negative
+* **Count data** Number of birds in different gardens, counts of pollinators visiting flowers, number of muscle reflexes in response to electical stimuli, number of lobster retrieved from different inland water areas etc.
+* **Positive numbers only** Heights of oak trees, weights of brown rats, yield of crops, mean length of haddock landed etc. These numbers might have decimal places, but they cannot be negative
 * **Proportion or percentages** These are "bounded" numbers, between 0 and 1.0, or 0 and 100 respectively.
 
 If you use a conventional linear model with these types of data, when you check the model assumptions, especially via a QQ plot, you may observe distortions, suggesting the linear model is not valid. You can sometimes transform your data before analysis by a linear model, for example take the `log(number_of_birds + 1)` as a response variable (we include the `+ 1` as it is not possible to take a logarithm of zero). However, it is usually better to use a generalised linear model from the outset.
@@ -41,12 +41,12 @@ The overall aim of this practical is to help you have a better understanding of 
 
 ## Setting up for the practical  
 ### Before you begin
-1. Start RStudio in the usual way. Open your `NES2303` project from the main menu by clicking on **File -> Open project...** and navigate to your NES2303 project file and open it. Check that the word "None" has been replaced by "NES2303" in the project listing at the top right of the RStudio window.
+1. Start RStudio in the usual way. Open your `NES2504` project from the main menu by clicking on **File -> Open project...** and navigate to your NES2504 project file and open it. Check that the word "None" has been replaced by "NES2504" in the project listing at the top right of the RStudio window.
 2. From the main menu click "File -> New file -> R Script"
 3. Save your script, e.g. call it `practical4.R`
 
 ### Data for this practical
-Go to Canvas and download the **lichen.csv**,  **sppcount.csv** and **beetle.csv** data sets. Start up your "File Explorer" and move the files from your **Downloads** folder to either your **NES2303** folder, or your **NES2303/Data** folder depending on your preferences.
+Go to Canvas and download the **lichen.csv**,  **sppcount.csv** and **beetle.csv** data sets. Start up your "File Explorer" and move the files from your **Downloads** folder to either your **NES2504** folder, or your **NES2504/Data** folder depending on your preferences.
 
 ### Initial lines in your script
 As usual, begin your script with a useful comment, and then load the `mosaic` and `car` packages, as shown below:
@@ -61,7 +61,7 @@ library(car)
 ```
 
 ### Import data from .csv files into R 
-Now import the three .csv files you downloaded from Canvas into R, `lichen.csv`, `sppcount.csv` and `beetle.csv`. Add the following code, plus suitable comments, to your `practical4.R` script. **Note**: The code below assumes you have a `Data` subfolder inside your `NES2303` folder. If you have stored your CSV files directly in your `NES2303` folder then omit the `Data/` from below.
+Now import the three .csv files you downloaded from Canvas into R, `lichen.csv`, `sppcount.csv` and `beetle.csv`. Add the following code, plus suitable comments, to your `practical4.R` script. **Note**: The code below assumes you have a `Data` subfolder inside your `NES2504` folder. If you have stored your CSV files directly in your `NES2303` folder then omit the `Data/` from below.
 
 ```{r echo=TRUE,  message=FALSE, warning=FALSE}
 lichen_dat <- read.csv("Data/lichen.csv")
