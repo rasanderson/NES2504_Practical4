@@ -32,23 +32,24 @@ If you use a conventional linear model with these types of data, when you check 
 
 A linear model works best with normal (Gaussian) data, but a GLM can be extended to a wide range of data types, including all four described above. To remind yourself of the underlying theory of GLMs go to [This Interactive Website](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/) and we will begin by using some of the examples from that website.
 
+# Learning objectives
+
 The overall aim of this practical is to help you have a better understanding of GLMs, how to set them up in R/RStudio, and learn how to interpret their outputs. Specific objectives of Practical 4 are:
 
 1. Use of GLMs with counts (whole number response data)
 2. Use of GLMs with binary responses (presence / absence, dead / alive etc.)
 3. Explore these concepts with new datasets
-4. Consider lognormal response data (response positive numbers, e.g. weight, height)
 
-## Setting up for the practical  
-### Before you begin
+# Setting up for the practical  
+## Before you begin
 1. Start RStudio in the usual way. Open your `NES2504` project from the main menu by clicking on **File -> Open project...** and navigate to your NES2504 project file and open it. Check that the word "None" has been replaced by "NES2504" in the project listing at the top right of the RStudio window.
 2. From the main menu click "File -> New file -> R Script"
 3. Save your script, e.g. call it `practical4.R`
 
-### Data for this practical
+## Data for this practical
 Go to Canvas and download the **lichen.csv**,  **sppcount.csv** and **beetle.csv** data sets. Start up your "File Explorer" and move the files from your **Downloads** folder to either your **NES2504** folder, or your **NES2504/Data** folder depending on your preferences.
 
-### Initial lines in your script
+## Initial lines in your script
 As usual, begin your script with a useful comment, and then load the `mosaic` and `car` packages, as shown below:
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -60,7 +61,7 @@ library(car)
 
 ```
 
-### Import data from .csv files into R 
+## Import data from .csv files into R 
 Now import the three .csv files you downloaded from Canvas into R, `lichen.csv`, `sppcount.csv` and `beetle.csv`. Add the following code, plus suitable comments, to your `practical4.R` script. **Note**: The code below assumes you have a `Data` subfolder inside your `NES2504` folder. If you have stored your CSV files directly in your `NES2303` folder then omit the `Data/` from below.
 
 ```{r echo=TRUE,  message=FALSE, warning=FALSE}
@@ -403,7 +404,10 @@ round(lichen_glm_predict(calcium=2, airpoll=5), 4)
 
 This value is the expected probability of lichen being present with calcium at 2, air pollution at 5.
 
-# Binomial GLMs where the sample size varies (In your own time)
+# Take-home messages
+Generalised linear models provide a simple extension to the linear models you've already been working with. They are much more flexible, and hence a little trickier to use initially. However, many types of biological or zoological data do not fit neatly into the expected format for a linear model, and GLMs will help you. In this practical we have only looked at Poisson and Binomial errors: there are many other types available if these are unsuitable.
+
+# Binomial GLMs where the sample size varies (in your own time)
 ## Sample sizes in binomial GLMs
 The lichen example had a sample size of one, in that one record (presence or absence of lichen) was available at each site. However, if you look at the [interactive description of binomial distributions (right-click and open in new tab)](https://naturalandenvironmentalscience.shinyapps.io/generalised_linear_models/#section-binomial-distribution) you can see that we can we can in fact vary the sample size. Initially on the website it is set a 1, but you can change this and see what happens.
 
@@ -459,5 +463,3 @@ gf_point(Mortality_rate ~ Dose, data=beetle_dat) %>%
   gf_smooth(Predicted_mortality ~ Dose, data=beetle_dat, method="glm", method.args = list(family=binomial(link = "logit")))
 ```
 
-# Take-home messages
-Generalised linear models provide a simple extension to the linear models you've already been working with. They are much more flexible, and hence a little trickier to use initially. However, many types of biological or zoological data do not fit neatly into the expected format for a linear model, and GLMs will help you. In this practical we have only looked at Poisson and Binomial errors: there are many other types available if these are unsuitable.
